@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import GoogleAuth from "../components/shared/GoogleAuth";
 
 const SignIn = () => {
   return (
@@ -41,6 +42,7 @@ const SignIn = () => {
             <button className="bg-orange-600 border-hidden w-full text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
               Sign In
             </button>
+            <GoogleAuth />
           </form>
           <div className="flex justify-around items-center border-t border-gray h-[70px]">
             <Link to="/sign-up" className="text-blue-700 font-semibold">

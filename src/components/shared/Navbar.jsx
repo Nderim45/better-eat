@@ -10,6 +10,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { MdFavorite, MdHelp } from "react-icons/md";
 import { FaWallet, FaUserFriends } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -43,12 +44,18 @@ const Navbar = () => {
         </button>
       ) : (
         <div className="flex">
-          <button className="text-black hidden md:flex items-center py-2 border-hidden">
+          <Link
+            to="/sign-in"
+            className="text-black hidden md:flex items-center px-4 py-2 border-hidden"
+          >
             Sign In
-          </button>
-          <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full">
+          </Link>
+          <Link
+            to="sign-up"
+            className="bg-black text-white hidden md:flex items-center px-4 py-2 rounded-full"
+          >
             Sign Up
-          </button>
+          </Link>
         </div>
       )}
 
@@ -109,12 +116,18 @@ const Navbar = () => {
           </ul>
         </nav>
         <div className="flex justify-around">
-          <button className="bg-orange-600 border-hidden text-white flex md:hidden items-center py-2 ">
+          <Link
+            to="/sign-in"
+            className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
+          >
             Sign In
-          </button>
-          <button className="bg-orange-600 border-hidden text-white flex md:hidden items-center py-2 ">
+          </Link>
+          <Link
+            to="/sign-up"
+            className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
+          >
             Sign Up
-          </button>
+          </Link>
         </div>
       </div>
     </div>
