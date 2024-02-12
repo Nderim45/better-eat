@@ -9,8 +9,10 @@ import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { MdFavorite, MdHelp } from "react-icons/md";
 import { FaWallet, FaUserFriends } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
+  const { currentUser } = useSelector((state) => state.user);
   const [nav, setNav] = useState(false);
 
   return (
@@ -27,7 +29,7 @@ const Navbar = () => {
           <p className="p-2">Pickup</p>
         </div>
       </div>
-      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[200px] sm:w-[400px] lg:w-[400px]">
+      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[200px] sm:w-[350px] lg:w-[400px]">
         <AiOutlineSearch size={25} />
         <input
           className="bg-transparent p-2 focus:outline-none w-full"
@@ -35,9 +37,20 @@ const Navbar = () => {
           placeholder="Search Foods"
         />
       </div>
-      <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full">
-        <BsFillCartFill size={20} className="mr-2" /> Cart
-      </button>
+      {currentUser ? (
+        <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full">
+          <BsFillCartFill size={20} className="mr-2" /> Cart
+        </button>
+      ) : (
+        <div className="flex">
+          <button className="text-black hidden md:flex items-center py-2 border-hidden">
+            Sign In
+          </button>
+          <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full">
+            Sign Up
+          </button>
+        </div>
+      )}
 
       {/* Mobile Menu */}
 
@@ -95,6 +108,14 @@ const Navbar = () => {
             </li>
           </ul>
         </nav>
+        <div className="flex justify-around">
+          <button className="bg-orange-600 border-hidden text-white flex md:hidden items-center py-2 ">
+            Sign In
+          </button>
+          <button className="bg-orange-600 border-hidden text-white flex md:hidden items-center py-2 ">
+            Sign Up
+          </button>
+        </div>
       </div>
     </div>
   );
