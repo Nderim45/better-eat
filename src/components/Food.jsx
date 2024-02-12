@@ -1,23 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { data } from "../data/data.js";
+import axios from "axios";
 
 const Food = () => {
   const [foods, setFoods] = useState(data);
+  const [category, setCategory] = useState("all");
+  const [price, setPrice] = useState(-1);
 
-  const filterType = (category) => {
-    setFoods(
-      data.filter((item) => {
-        return item.category === category;
+  useEffect(() => {
+    axios
+      .get(
+        `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/food/?category=${category}&order=${price}`
+      )
+      .then((res) => {
+        setFoods(res.data);
       })
-    );
+      .catch((err) => {
+      });
+  }, [category, price]);
+
+  const onCategoryChange = (e) => {
+    setCategory(e.target.id);
   };
 
-  const filterPrice = (price) => {
-    setFoods(
-      data.filter((item) => {
-        return item.price === price;
-      })
-    );
+  const onPriceChange = (e) => {
+    setPrice(e.target.id);
   };
 
   return (
@@ -31,33 +40,36 @@ const Food = () => {
           <p className="font-bold text-gray-700">Filter Type</p>
           <div className="flex justify-self-start flex-wrap">
             <button
-              onClick={() => {
-                setFoods(data);
-              }}
+              id="all"
+              onClick={onCategoryChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               All
             </button>
             <button
-              onClick={() => filterType("burger")}
+              id="burger"
+              onClick={onCategoryChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               Burgers
             </button>
             <button
-              onClick={() => filterType("pizza")}
+              id="pizza"
+              onClick={onCategoryChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               Pizza
             </button>
             <button
-              onClick={() => filterType("salad")}
+              id="salad"
+              onClick={onCategoryChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               Salads
             </button>
             <button
-              onClick={() => filterType("chicken")}
+              id="chicken"
+              onClick={onCategoryChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               Chicken
@@ -68,25 +80,15 @@ const Food = () => {
           <p className="font-bold text-gray-700">Filter Price</p>
           <div className="flex justify-self-start max-w-[390px] w-full">
             <button
-              onClick={() => filterPrice("$")}
+              id="1"
+              onClick={onPriceChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               $
             </button>
             <button
-              onClick={() => filterPrice("$$")}
-              className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
-            >
-              $$
-            </button>
-            <button
-              onClick={() => filterPrice("$$$")}
-              className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
-            >
-              $$$
-            </button>
-            <button
-              onClick={() => filterPrice("$$$$")}
+              id="-1"
+              onClick={onPriceChange}
               className="m-1 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
             >
               $$$$
