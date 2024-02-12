@@ -19,23 +19,19 @@ const SignUp = () => {
   const handleOnSubmit = (e) => {
     e.preventDefault();
     const { confirmPassword, ...rest } = userData;
-    console.log(userData.password);
-    console.log(userData.confirmpassword);
     if (userData.password === confirmPassword) {
       setLoading(true);
       axios
         .post(`${import.meta.env.VITE_APP_BACKEND_URL}/auth/signup`, rest)
         .then((res) => {
-          console.log(res);
           if (res.data.success === true) navigate("/sign-in");
         })
         .catch((err) => {
-          console.log(err);
           setError(err.response.data.message);
           setLoading(false);
         });
     } else {
-      console.log("test");
+      setError("Passwords do not match");
     }
   };
 

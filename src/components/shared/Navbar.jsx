@@ -115,20 +115,22 @@ const Navbar = () => {
             </li>
           </ul>
         </nav>
-        <div className="flex justify-around">
-          <Link
-            to="/sign-in"
-            className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
-          >
-            Sign In
-          </Link>
-          <Link
-            to="/sign-up"
-            className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
-          >
-            Sign Up
-          </Link>
-        </div>
+        {!currentUser && (
+          <div className="flex justify-around">
+            <Link
+              to="/sign-in"
+              className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/sign-up"
+              className="bg-orange-600 border-hidden text-white flex md:hidden items-center px-4 py-2 rounded-lg"
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
