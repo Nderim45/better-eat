@@ -1,9 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleAuth from "../components/shared/GoogleAuth";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Alert, Snackbar } from "@mui/material";
+import axios from "axios";
 
 const SignUp = () => {
   const navigate = useNavigate();
+
+  const [userData, setUserData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    const { confirmPassword, ...rest } = userData;
+    console.log(userData.password);
+    console.log(userData.confirmpassword);
+    if (userData.password === confirmPassword) {
+      setLoading(true);
+      axios
+        .post(`${import.meta.env.VITE_APP_BACKEND_URL}/auth/signup`, rest)
+        .then((res) => {
+          console.log(res);
+          if (res.data.success === true) navigate("/sign-in");
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err.response.data.message);
+          setLoading(false);
+        });
+    } else {
+      console.log("test");
+    }
+  };
+
   return (
     <div className="flex flex-row h-[100vh]">
       <div className="h-full w-1/2 hidden md:flex relative">
@@ -19,33 +54,36 @@ const SignUp = () => {
           <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
             Create account
           </h2>
-          <form className="my-8 gap-6 px-10 pb-5">
+          <form onSubmit={handleOnSubmit} className="my-8 gap-6 px-10 pb-5">
             <div className="flex gap-4 py-4 ">
               <input
-                id="first-name"
-                name="first-name"
+                id="firstname"
+                name="firstname"
                 type="text"
                 required
                 className="appearance-none rounded-lg relative block w-1/2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none  focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="First Name"
+                onChange={handleChange}
               />
               <input
-                id="last-name"
-                name="last-name"
+                id="lastname"
+                name="lastname"
                 type="text"
                 required
                 className="appearance-none rounded-lg relative block w-1/2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Last Name"
+                onChange={handleChange}
               />
             </div>
             <div className="flex gap-4 py-4 ">
               <input
-                id="email-address"
+                id="email"
                 name="email"
                 type="email"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none  focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
+                onChange={handleChange}
               />
             </div>
             <div className="flex gap-4 py-4 ">
@@ -56,6 +94,18 @@ const SignUp = () => {
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none  focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Phone Number"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="flex gap-4 py-4 ">
+              <input
+                id="address"
+                name="address"
+                type="text"
+                required
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none  focus:border-orange-500 focus:z-10 sm:text-sm"
+                placeholder="Address"
+                onChange={handleChange}
               />
             </div>
             <div className="py-4">
@@ -66,23 +116,33 @@ const SignUp = () => {
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+                onChange={handleChange}
               />
             </div>
             <div className="py-4">
               <input
-                id="confirm-password"
-                name="confirm-password"
+                id="confirmPassword"
+                name="confirmPassword"
                 type="password"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
+                onChange={handleChange}
               />
             </div>
             <div className="flex gap-4 py-4">
-              <button className="bg-orange-600 border-hidden w-1/2 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-                Sign Up
+              <button
+                disabled={loading}
+                className="bg-orange-600 border-hidden w-1/2 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+              >
+                {loading ? (
+                  <CircularProgress size={20} style={{ color: "white" }} />
+                ) : (
+                  "Sign Up"
+                )}
               </button>
               <button
+                disabled={loading}
                 onClick={() => navigate("/sign-in")}
                 className="bg-white border-orange-600 w-1/2 text-orange-600 p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
               >
@@ -92,10 +152,20 @@ const SignUp = () => {
             <div className="flex items-center justify-center py-2">
               <p>Or</p>
             </div>
-            <GoogleAuth />
+            <GoogleAuth disabled={loading} />
           </form>
         </div>
       </div>
+      <Snackbar
+        autoHideDuration={3000}
+        open={error ? true : false}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setError(null)}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
