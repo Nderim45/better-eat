@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { data } from "../data/data.js";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Food = () => {
+  const navigate = useNavigate();
+
   const [foods, setFoods] = useState(data);
   const [category, setCategory] = useState("all");
   const [price, setPrice] = useState(-1);
@@ -17,8 +20,7 @@ const Food = () => {
       .then((res) => {
         setFoods(res.data);
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
   }, [category, price]);
 
   const onCategoryChange = (e) => {
@@ -100,8 +102,9 @@ const Food = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
         {foods.map((item, index) => (
           <div
-            className="border shadow-lg rounded-lg hover:scale-105 duration-300"
+            className="border shadow-lg rounded-lg hover:scale-105 duration-300 cursor-pointer"
             key={index}
+            onClick={() => navigate(`/details/${item._id}`)}
           >
             <img
               src={item.image}
