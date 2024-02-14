@@ -71,17 +71,17 @@ const FoodDetails = () => {
   };
 
   return (
-    <div className="h-[100vh] md:overflow-hidden">
+    <div className="max-h-screen md:overflow-hidden">
       <Navbar />
-      <div className="flex flex-col w-full h-full md:flex-row">
-        <div className="md:w-1/2 h-full">
+      <div className="flex flex-col w-full h-screen md:flex-row">
+        <div className="md:w-1/2 md:sticky h-full">
           <img
             src={foodDetails.image}
             alt="food image"
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="md:w-1/2 h-full px-10 py-4">
+        <div className=" md:overflow-y-scroll mb-20 md:w-1/2 h-full px-10 py-4">
           <h1 className="text-4xl font-bold">{foodDetails.name}</h1>
           {foodDetails.category === "pizza" && (
             <p className="text-gray-600">
@@ -92,7 +92,7 @@ const FoodDetails = () => {
             {foodDetails.description}
           </p>
           {foodDetails.category === "pizza" && (
-            <div className="flex gap-5 my-5">
+            <div className="flex flex-wrap gap-5 my-5">
               <button
                 onClick={() => setSize("small")}
                 className={
@@ -125,26 +125,27 @@ const FoodDetails = () => {
               </button>
             </div>
           )}
-          {foodDetails.category === "burger" && (
-            <div className="flex flex-wrap gap-5 my-5">
-              <p className="text-black text-xl font-semibold w-full">
-                Choose Ingredients:
-              </p>
-              {foodDetails.ingredients.map((item, index) => (
-                <button
-                  onClick={handleIngredientsClick}
-                  className={
-                    ingredients.includes(item)
-                      ? "bg-orange-600 border-orange-600 text-white"
-                      : "border-orange-600 text-orange-600"
-                  }
-                  key={index}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          )}
+          {foodDetails.category === "burger" ||
+            (foodDetails.category === "pizza" && (
+              <div className="flex flex-wrap gap-5 my-5">
+                <p className="text-black text-xl font-semibold w-full">
+                  Choose Ingredients:
+                </p>
+                {foodDetails.ingredients.map((item, index) => (
+                  <button
+                    onClick={handleIngredientsClick}
+                    className={
+                      ingredients.includes(item)
+                        ? "bg-orange-600 border-orange-600 text-white"
+                        : "border-orange-600 text-orange-600"
+                    }
+                    key={index}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            ))}
           {foodDetails.category === "salad" && (
             <div className="flex gap-5 my-5">
               <button
@@ -179,8 +180,8 @@ const FoodDetails = () => {
               </button>
             </div>
           )}
-          <div className="flex items-center mt-10">
-            <div className="flex justify-between items-center border-2 rounded-full max-w-[120px]">
+          <div className="flex flex-col my-10 mb-20">
+            <div className="flex justify-between mb-10 items-center border-2 rounded-full max-w-[120px]">
               <button
                 disabled={quantity === 1}
                 className="border-none "
@@ -196,12 +197,14 @@ const FoodDetails = () => {
                 +
               </button>
             </div>
-            <button className="ml-10 bg-black text-white px-10 py-2 rounded-full">
-              Add To Cart
-            </button>
-            <p className="text-2xl ml-10">
-              Price: <span className="font-semibold">${price}</span>
-            </p>
+            <div className="flex">
+              <button className="bg-black text-white px-5 py-2 rounded-full">
+                Add To Cart
+              </button>
+              <p className="text-2xl ml-10">
+                Price: <span className="font-semibold">${price}</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
