@@ -9,12 +9,23 @@ import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { MdFavorite, MdHelp } from "react-icons/md";
 import { FaWallet, FaUserFriends } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { PiSignOutLight } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { signOutUser } from "../../redux/user/userSlice";
+import { Badge } from "@mui/material";
 
 const Navbar = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const { currentUser, cart } = useSelector((state) => state.user);
   const [nav, setNav] = useState(false);
+
+  const handleSignOut = () => {
+    dispatch(signOutUser());
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
 
   return (
     <div className="max-w-[1640px] mx-auto flex justify-between items-center p-4">
@@ -23,14 +34,14 @@ const Navbar = () => {
           <AiOutlineMenu size={30} />
         </div>
         <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
-          Better<span className="font-bold ">Eat</span>
+          Better<span className="font-bold">Eat</span>
         </h1>
         {/* <div className="hidden lg:flex items-center bg-gray-200 rounded-full p-1 text-[14px]">
           <p className="bg-black text-white rounded-full p-2">Delivery</p>
           <p className="p-2">Pickup</p>
         </div> */}
       </div>
-      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[200px] sm:w-[350px] lg:w-[400px]">
+      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[180px] md:w-[350px] lg:w-[400px]">
         <AiOutlineSearch size={25} />
         <input
           className="bg-transparent p-2 focus:outline-none w-full"
@@ -39,9 +50,27 @@ const Navbar = () => {
         />
       </div>
       {currentUser ? (
-        <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full">
-          <BsFillCartFill size={20} className="mr-2" /> Cart
-        </button>
+        <div className="flex items-center gap-4">
+          <Badge
+            badgeContent={cart?.foods.length}
+            color="secondary"
+            sx={{
+              "& .MuiBadge-badge": {
+                color: "white",
+                backgroundColor: "#ea580c",
+              },
+            }}
+          >
+            <button className="bg-black text-white flex items-center py-2 rounded-full">
+              <BsFillCartFill size={20} className="mr-2" /> Cart
+            </button>
+          </Badge>
+          <PiSignOutLight
+            size={30}
+            className="hover:cursor-pointer"
+            onClick={handleSignOut}
+          />
+        </div>
       ) : (
         <div className="flex">
           <Link

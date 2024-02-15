@@ -4,6 +4,7 @@ const initialState = {
   currentUser: null,
   error: null,
   loading: false,
+  cart: null,
 };
 
 const userSlice = createSlice({
@@ -51,6 +52,16 @@ const userSlice = createSlice({
       state.currentUser = null;
       state.loading = false;
       state.error = null;
+      state.cart = null;
+    },
+    createCart: (state, action) => {
+      state.cart = action.payload;
+    },
+    updateCart: (state, action) => {
+      state.cart = action.payload;
+    },
+    deleteCart: (state, action) => {
+      state.cart = null;
     },
   },
 });
@@ -66,6 +77,9 @@ export const {
   deleteUserStart,
   deleteUserSuccess,
   signOutUser,
+  createCart,
+  updateCart,
+  deleteCart,
 } = userSlice.actions;
 
 export default userSlice.reducer;

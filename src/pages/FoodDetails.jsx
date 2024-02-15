@@ -23,7 +23,6 @@ const FoodDetails = () => {
     axios
       .get(`${import.meta.env.VITE_APP_BACKEND_URL}/food/${id}`)
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
           setFoodDetails(res.data);
           setNewOrderDetails({ ...newOrderDetails, price: res.data.price });
@@ -35,7 +34,7 @@ const FoodDetails = () => {
 
     axios
       .get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser.data._id}`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`,
         {
           status: "cart",
         }
@@ -126,14 +125,12 @@ const FoodDetails = () => {
       );
     } else {
       axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/order`, {
-        clientId: currentUser.data._id,
+        clientId: currentUser._id,
         foods: [{ ...newOrderDetails, ingredients }],
         status: "cart",
       });
     }
   };
-
-  console.log(newOrderDetails);
 
   return (
     <div className="max-h-screen md:overflow-hidden">
