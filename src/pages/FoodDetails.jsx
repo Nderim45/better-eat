@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/shared/Navbar";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const FoodDetails = () => {
   const { id } = useParams();
+  const { currentUser } = useSelector((state) => state.user);
 
   const [foodDetails, setFoodDetails] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState(null);
   const [ingredients, setIngredients] = useState([]);
   const [price, setPrice] = useState(null);
+  const [order, setOrder] = useState(null);
+  const [newOrderDetails, setNewOrderDetails] = useState({
+    quantity,
+    foodId: id,
+  });
 
   useEffect(() => {
     axios
@@ -19,38 +26,69 @@ const FoodDetails = () => {
         console.log(res);
         if (res.status === 200) {
           setFoodDetails(res.data);
-          setPrice(res.data.price);
+          setNewOrderDetails({ ...newOrderDetails, price: res.data.price });
         }
       })
       .catch((err) => {
         console.log(err);
       });
+
+    axios
+      .get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser.data._id}`,
+        {
+          status: "cart",
+        }
+      )
+      .then((res) => {
+        if (res.data.length !== 0) {
+          setOrder(res.data[0]);
+        }
+      });
   }, []);
 
   useEffect(() => {
     if (foodDetails?.category === "pizza") {
-      switch (size) {
+      switch (newOrderDetails.size) {
         case "small":
-          setPrice(foodDetails.price * quantity);
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: foodDetails.price * quantity,
+          });
           break;
         case "medium":
-          setPrice(Number(foodDetails.price * 1.25 * quantity).toFixed(2));
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: Math.round(foodDetails.price * 1.25 * quantity * 1e2) / 1e2,
+          });
           break;
         case "large":
-          setPrice(Number(foodDetails.price * 1.5 * quantity).toFixed(2));
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: Math.round(foodDetails.price * 1.5 * quantity * 1e2) / 1e2,
+          });
           break;
       }
     }
     if (foodDetails?.category === "salad") {
-      switch (size) {
-        case "1":
-          setPrice(foodDetails.price * quantity);
+      switch (newOrderDetails.size) {
+        case "1 Person":
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: foodDetails.price * quantity,
+          });
           break;
-        case "3":
-          setPrice(Number(foodDetails.price * 1.25 * quantity).toFixed(2));
+        case "3 Persons":
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: Math.round(foodDetails.price * 1.25 * quantity * 1e2) / 1e2,
+          });
           break;
-        case "5":
-          setPrice(Number(foodDetails.price * 1.5 * quantity).toFixed(2));
+        case "5 Persons":
+          setNewOrderDetails({
+            ...newOrderDetails,
+            price: Math.round(foodDetails.price * 1.5 * quantity * 1e2) / 1e2,
+          });
           break;
       }
     }
@@ -58,9 +96,12 @@ const FoodDetails = () => {
       foodDetails?.category === "chicken" ||
       foodDetails?.category === "burger"
     ) {
-      setPrice(foodDetails.price * quantity);
+      setNewOrderDetails({
+        ...newOrderDetails,
+        price: foodDetails.price * quantity,
+      });
     }
-  }, [size, quantity]);
+  }, [newOrderDetails.size, quantity]);
 
   const handleIngredientsClick = (e) => {
     if (ingredients.includes(e.target.innerText)) {
@@ -69,6 +110,30 @@ const FoodDetails = () => {
       setIngredients([...ingredients, e.target.innerText]);
     }
   };
+
+  const handleSizeChange = (size) => {
+    setNewOrderDetails({ ...newOrderDetails, size: size });
+  };
+
+  const handleAdddToCart = (e) => {
+    if (order) {
+      axios.patch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${order._id}`,
+        {
+          ...order,
+          foods: [...order.foods, { ...newOrderDetails, ingredients }],
+        }
+      );
+    } else {
+      axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/order`, {
+        clientId: currentUser.data._id,
+        foods: [{ ...newOrderDetails, ingredients }],
+        status: "cart",
+      });
+    }
+  };
+
+  console.log(newOrderDetails);
 
   return (
     <div className="max-h-screen md:overflow-hidden">
@@ -94,9 +159,9 @@ const FoodDetails = () => {
           {foodDetails.category === "pizza" && (
             <div className="flex flex-wrap gap-5 my-5">
               <button
-                onClick={() => setSize("small")}
+                onClick={() => handleSizeChange("small")}
                 className={
-                  size === "small"
+                  newOrderDetails.size === "small"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -104,9 +169,9 @@ const FoodDetails = () => {
                 Small
               </button>
               <button
-                onClick={() => setSize("medium")}
+                onClick={() => handleSizeChange("medium")}
                 className={
-                  size === "medium"
+                  newOrderDetails.size === "medium"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -114,9 +179,9 @@ const FoodDetails = () => {
                 Medium
               </button>
               <button
-                onClick={() => setSize("large")}
+                onClick={() => handleSizeChange("large")}
                 className={
-                  size === "large"
+                  newOrderDetails.size === "large"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -135,7 +200,7 @@ const FoodDetails = () => {
                   <button
                     onClick={handleIngredientsClick}
                     className={
-                      ingredients.includes(item)
+                      ingredients?.includes(item)
                         ? "bg-orange-600 border-orange-600 text-white"
                         : "border-orange-600 text-orange-600"
                     }
@@ -149,9 +214,9 @@ const FoodDetails = () => {
           {foodDetails.category === "salad" && (
             <div className="flex gap-5 my-5">
               <button
-                onClick={() => setSize("1")}
+                onClick={() => handleSizeChange("1 Person")}
                 className={
-                  size === "1"
+                  size === "1 Person"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -159,9 +224,9 @@ const FoodDetails = () => {
                 1 Person
               </button>
               <button
-                onClick={() => setSize("3")}
+                onClick={() => handleSizeChange("3 Persons")}
                 className={
-                  size === "3"
+                  size === "3 Persons"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -169,9 +234,9 @@ const FoodDetails = () => {
                 3 Persons
               </button>
               <button
-                onClick={() => setSize("5")}
+                onClick={() => handleSizeChange("5 Persons")}
                 className={
-                  size === "5"
+                  size === "5 Persons"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -198,11 +263,15 @@ const FoodDetails = () => {
               </button>
             </div>
             <div className="flex">
-              <button className="bg-black text-white px-5 py-2 rounded-full">
+              <button
+                onClick={handleAdddToCart}
+                className="bg-black text-white px-5 py-2 rounded-full"
+              >
                 Add To Cart
               </button>
               <p className="text-2xl ml-10">
-                Price: <span className="font-semibold">${price}</span>
+                Price:{" "}
+                <span className="font-semibold">${newOrderDetails.price}</span>
               </p>
             </div>
           </div>
