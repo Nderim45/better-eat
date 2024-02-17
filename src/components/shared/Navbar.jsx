@@ -11,11 +11,12 @@ import { MdFavorite, MdHelp } from "react-icons/md";
 import { FaWallet, FaUserFriends } from "react-icons/fa";
 import { PiSignOutLight } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signOutUser } from "../../redux/user/userSlice";
 import { Badge } from "@mui/material";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { currentUser, cart } = useSelector((state) => state.user);
@@ -24,7 +25,7 @@ const Navbar = () => {
   const handleSignOut = () => {
     dispatch(signOutUser());
     localStorage.removeItem("token");
-    window.location.reload();
+    navigate("/");
   };
 
   return (
@@ -33,7 +34,10 @@ const Navbar = () => {
         <div onClick={() => setNav(!nav)} className="cursor-pointer">
           <AiOutlineMenu size={30} />
         </div>
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
+        <h1
+          onClick={() => navigate("/")}
+          className="text-2xl hidden md:flex lg:text-4xl px-2 hover:cursor-pointer"
+        >
           Better<span className="font-bold">Eat</span>
         </h1>
         {/* <div className="hidden lg:flex items-center bg-gray-200 rounded-full p-1 text-[14px]">
@@ -41,7 +45,7 @@ const Navbar = () => {
           <p className="p-2">Pickup</p>
         </div> */}
       </div>
-      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[180px] md:w-[350px] lg:w-[400px]">
+      <div className="bg-gray-200 rounded-full flex items-center px-2 w-[180px] sm:w-[250px] md:w-[350px] lg:w-[400px]">
         <AiOutlineSearch size={25} />
         <input
           className="bg-transparent p-2 focus:outline-none w-full"
@@ -61,7 +65,10 @@ const Navbar = () => {
               },
             }}
           >
-            <button className="bg-black text-white flex items-center py-2 rounded-full">
+            <button
+              className="bg-black text-white flex items-center py-2 rounded-full"
+              onClick={() => navigate("/cart")}
+            >
               <BsFillCartFill size={20} className="mr-2" /> Cart
             </button>
           </Badge>
@@ -109,7 +116,10 @@ const Navbar = () => {
           size={30}
           className="absolute right-4 top-4 cursor-pointer"
         />
-        <h2 className="text-2xl p-4">
+        <h2
+          onClick={() => navigate("/")}
+          className="text-2xl p-4 hover:cursor-pointer"
+        >
           Better<span className="font-bold">Eat</span>
         </h2>
         <nav>

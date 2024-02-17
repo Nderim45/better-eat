@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/shared/Navbar";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 const FoodDetails = () => {
   const { id } = useParams();
   const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const [foodDetails, setFoodDetails] = useState({});
   const [quantity, setQuantity] = useState(1);
@@ -15,7 +16,7 @@ const FoodDetails = () => {
   const [price, setPrice] = useState(null);
   const [order, setOrder] = useState(null);
   const [newOrderDetails, setNewOrderDetails] = useState({
-    quantity,
+    quantity: 1,
     foodId: id,
   });
 
@@ -33,12 +34,9 @@ const FoodDetails = () => {
       });
 
     axios
-      .get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`,
-        {
-          status: "cart",
-        }
-      )
+      .get(`${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`, {
+        status: "cart",
+      })
       .then((res) => {
         if (res.data.length !== 0) {
           setOrder(res.data[0]);
@@ -52,19 +50,25 @@ const FoodDetails = () => {
         case "small":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: foodDetails.price * quantity,
+            price: foodDetails.price * newOrderDetails.quantity,
           });
           break;
         case "medium":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: Math.round(foodDetails.price * 1.25 * quantity * 1e2) / 1e2,
+            price:
+              Math.round(
+                foodDetails.price * 1.25 * newOrderDetails.quantity * 1e2
+              ) / 1e2,
           });
           break;
         case "large":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: Math.round(foodDetails.price * 1.5 * quantity * 1e2) / 1e2,
+            price:
+              Math.round(
+                foodDetails.price * 1.5 * newOrderDetails.quantity * 1e2
+              ) / 1e2,
           });
           break;
       }
@@ -74,19 +78,25 @@ const FoodDetails = () => {
         case "1 Person":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: foodDetails.price * quantity,
+            price: foodDetails.price * newOrderDetails.quantity,
           });
           break;
         case "3 Persons":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: Math.round(foodDetails.price * 1.25 * quantity * 1e2) / 1e2,
+            price:
+              Math.round(
+                foodDetails.price * 1.25 * newOrderDetails.quantity * 1e2
+              ) / 1e2,
           });
           break;
         case "5 Persons":
           setNewOrderDetails({
             ...newOrderDetails,
-            price: Math.round(foodDetails.price * 1.5 * quantity * 1e2) / 1e2,
+            price:
+              Math.round(
+                foodDetails.price * 1.5 * newOrderDetails.quantity * 1e2
+              ) / 1e2,
           });
           break;
       }
@@ -97,10 +107,10 @@ const FoodDetails = () => {
     ) {
       setNewOrderDetails({
         ...newOrderDetails,
-        price: foodDetails.price * quantity,
+        price: foodDetails.price * newOrderDetails.quantity,
       });
     }
-  }, [newOrderDetails.size, quantity]);
+  }, [newOrderDetails.size, newOrderDetails.quantity]);
 
   const handleIngredientsClick = (e) => {
     if (ingredients.includes(e.target.innerText)) {
@@ -116,19 +126,24 @@ const FoodDetails = () => {
 
   const handleAdddToCart = (e) => {
     if (order) {
-      axios.patch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${order._id}`,
-        {
+      axios
+        .patch(`${import.meta.env.VITE_APP_BACKEND_URL}/order/${order._id}`, {
           ...order,
           foods: [...order.foods, { ...newOrderDetails, ingredients }],
-        }
-      );
+        })
+        .then((res) => {
+          if (res.status === 200) navigate("/");
+        });
     } else {
-      axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/order`, {
-        clientId: currentUser._id,
-        foods: [{ ...newOrderDetails, ingredients }],
-        status: "cart",
-      });
+      axios
+        .post(`${import.meta.env.VITE_APP_BACKEND_URL}/order`, {
+          clientId: currentUser._id,
+          foods: [{ ...newOrderDetails, ingredients }],
+          status: "cart",
+        })
+        .then((res) => {
+          if (res.status === 200) navigate("/");
+        });
     }
   };
 
@@ -213,7 +228,7 @@ const FoodDetails = () => {
               <button
                 onClick={() => handleSizeChange("1 Person")}
                 className={
-                  size === "1 Person"
+                  newOrderDetails.size === "1 Person"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -223,7 +238,7 @@ const FoodDetails = () => {
               <button
                 onClick={() => handleSizeChange("3 Persons")}
                 className={
-                  size === "3 Persons"
+                  newOrderDetails.size === "3 Persons"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -233,7 +248,7 @@ const FoodDetails = () => {
               <button
                 onClick={() => handleSizeChange("5 Persons")}
                 className={
-                  size === "5 Persons"
+                  newOrderDetails.size === "5 Persons"
                     ? "bg-orange-600 border-orange-600 text-white"
                     : "border-orange-600 text-orange-600"
                 }
@@ -247,14 +262,24 @@ const FoodDetails = () => {
               <button
                 disabled={quantity === 1}
                 className="border-none "
-                onClick={() => setQuantity(quantity - 1)}
+                onClick={() =>
+                  setNewOrderDetails({
+                    ...newOrderDetails,
+                    quantity: newOrderDetails.quantity - 1,
+                  })
+                }
               >
                 -
               </button>
-              <p>{quantity}</p>
+              <p>{newOrderDetails.quantity}</p>
               <button
                 className="border-none"
-                onClick={() => setQuantity(quantity + 1)}
+                onClick={() =>
+                  setNewOrderDetails({
+                    ...newOrderDetails,
+                    quantity: newOrderDetails.quantity + 1,
+                  })
+                }
               >
                 +
               </button>
