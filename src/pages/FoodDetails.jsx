@@ -34,9 +34,9 @@ const FoodDetails = () => {
       });
 
     axios
-      .get(`${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`, {
-        status: "cart",
-      })
+      .get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}/cart`
+      )
       .then((res) => {
         if (res.data.length !== 0) {
           setOrder(res.data[0]);
@@ -124,7 +124,7 @@ const FoodDetails = () => {
     setNewOrderDetails({ ...newOrderDetails, size: size });
   };
 
-  const handleAdddToCart = (e) => {
+  const handleAddToCart = (e) => {
     if (order) {
       axios
         .patch(`${import.meta.env.VITE_APP_BACKEND_URL}/order/${order._id}`, {
@@ -140,9 +140,10 @@ const FoodDetails = () => {
           clientId: currentUser._id,
           foods: [{ ...newOrderDetails, ingredients }],
           status: "cart",
+          address: currentUser.address,
         })
         .then((res) => {
-          if (res.status === 200) navigate("/");
+          if (res.status === 201) navigate("/");
         });
     }
   };
@@ -286,7 +287,7 @@ const FoodDetails = () => {
             </div>
             <div className="flex">
               <button
-                onClick={handleAdddToCart}
+                onClick={handleAddToCart}
                 className="bg-black text-white px-5 py-2 rounded-full"
               >
                 Add To Cart

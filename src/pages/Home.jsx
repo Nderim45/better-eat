@@ -16,30 +16,13 @@ const Home = () => {
     if (currentUser !== null) {
       axios
         .get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`,
-          {
-            status: "cart",
-          }
+          `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}/cart`,
         )
         .then((res) => {
-          console.log(res);
           if (res.data.length !== 0) {
             dispatch(createCart(res.data[0]));
           }
         });
-
-      // const getCart = async () => {
-      //   const response = await axios.get(
-      //     `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}`,
-      //     {
-      //       status: "cart",
-      //     }
-      //   );
-      //   console.log(response.data[0]);
-      //   dispatch(createCart(response.data[0]));
-      // };
-
-      // getCart();
     }
   }, []);
 

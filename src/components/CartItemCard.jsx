@@ -16,7 +16,7 @@ const CartItemCard = ({ data, index, callBack }) => {
   }, []);
 
   return (
-    <div className="w-full grid grid-cols-6 px-10 py-5 border-b-2">
+    <div className="w-full min-w-[900px] grid grid-cols-6 px-10 py-5 border-b-2">
       <div className="flex gap-4 items-center col-span-2">
         <div className="h-[100px] w-[100px]">
           <img
