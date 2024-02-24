@@ -22,7 +22,10 @@ const SignUp = () => {
     if (userData.password === confirmPassword) {
       setLoading(true);
       axios
-        .post(`${import.meta.env.VITE_APP_BACKEND_URL}/auth/signup`, rest)
+        .post(`${import.meta.env.VITE_APP_BACKEND_URL}/auth/signup`, {
+          ...rest,
+          role: "client",
+        })
         .then((res) => {
           if (res.data.success === true) navigate("/sign-in");
         })

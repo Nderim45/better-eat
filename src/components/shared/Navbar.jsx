@@ -25,7 +25,7 @@ const Navbar = () => {
   const handleSignOut = () => {
     dispatch(signOutUser());
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/sign-in");
   };
 
   return (

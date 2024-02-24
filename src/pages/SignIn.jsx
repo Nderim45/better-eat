@@ -31,6 +31,10 @@ const SignIn = () => {
           const { token, ...rest } = res.data.data;
           localStorage.setItem("token", JSON.stringify(token));
           dispatch(signInSuccess(rest));
+          if (rest.role === "admin") {
+            navigate("/dashboard");
+            return;
+          }
           navigate("/");
         }
       })
