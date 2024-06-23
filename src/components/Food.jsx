@@ -102,6 +102,7 @@ const Food = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
         {foods.map((item, index) => (
           <div
+            data-aos="zoom-in"
             className="border shadow-lg rounded-lg hover:scale-105 duration-300 cursor-pointer"
             key={index}
             onClick={() => navigate(`/details/${item._id}`)}
