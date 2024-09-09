@@ -20,11 +20,11 @@ Better Eat is a modern website that helps users find healthier and more convenie
 ## Demo
 You can visit website here:
 
-<a href="https://better-eat.netlify.app/">RealEstate </a>
+<a href="https://better-eat.netlify.app/">BetterEat</a>
 ### Screenshot
 
 
-![Screenshot of Real Estate Platform](https://i.postimg.cc/bv87t5YN/realestate.png)
+![Screenshot of Real Estate Platform](https://i.postimg.cc/dVG4PmMb/bettereat.png)
 
 ## Installation
 
