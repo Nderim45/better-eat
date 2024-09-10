@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 const FoodDetails = () => {
   const { id } = useParams();
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
+
   const navigate = useNavigate();
 
   const [foodDetails, setFoodDetails] = useState({});
@@ -33,15 +35,19 @@ const FoodDetails = () => {
         console.log(err);
       });
 
-    axios
-      .get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/order/${currentUser._id}/cart`
-      )
-      .then((res) => {
-        if (res.data.length !== 0) {
-          setOrder(res.data[0]);
-        }
-      });
+    if (currentUser) {
+      axios
+        .get(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/order/${
+            currentUser._id
+          }/cart`
+        )
+        .then((res) => {
+          if (res.data.length !== 0) {
+            setOrder(res.data[0]);
+          }
+        });
+    }
   }, []);
 
   useEffect(() => {
